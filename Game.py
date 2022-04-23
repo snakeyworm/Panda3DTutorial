@@ -32,7 +32,6 @@ class Game( ShowBase ):
         self.cTrav = CollisionTraverser()
 
         self.pusher.setHorizontal( True )
-        self.pusher.add_in_pattern( "%fn-into%in" )
 
         self.keyMap = {
             "up": False,
@@ -89,6 +88,7 @@ class Game( ShowBase ):
         self.accept( "mouse1", self.updateKeyMap, [ "shoot", True ] )
         self.accept( "mouse1-up", self.updateKeyMap, [ "shoot", False ] )
 
+        self.pusher.add_in_pattern( "%fn-into-%in" )
         self.accept( "trapEnemy-into-wall", self.stopTrap )
         self.accept( "trapEnemy-into-trapEnemy", self.stopTrap )
         self.accept( "trapEnenmy-into-player", self.trapHitsSomething )

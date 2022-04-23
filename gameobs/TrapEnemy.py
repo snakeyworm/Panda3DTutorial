@@ -19,16 +19,17 @@ class TrapEnemy( Enemy ):
 
         self.moveInX = False
 
-        self.moveDirection = 0
+        self.moveDirection = -1.0
 
         self.ignorePlayer = False
 
     def runLogic( self, player, dt ):
 
         if self.moveDirection != 0:
+
             self.walking = True
             if self.moveInX:
-                self.velocity.addX( self.moveDirection*self.acceleration*dt )
+                self.velocity.addX( self.moveDirection * self.acceleration*dt )
             else:
                 self.velocity.addY( self.moveDirection * self.acceleration*dt )
 
@@ -42,6 +43,7 @@ class TrapEnemy( Enemy ):
             else:
                 detector = diff.x
                 movement = diff.y
+
 
             if abs( detector ) < 0.5:
                 self.moveDirection = math.copysign( 1, movement )

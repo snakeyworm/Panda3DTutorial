@@ -22,7 +22,7 @@ class Enemy( GameObject ):
 
         else:
 
-            spawnControl =self.actor.getAnimControl( "spawn" )
+            spawnControl = self.actor.getAnimControl( "spawn" )
             if spawnControl is None or not spawnControl.isPlaying():
                 attackControl = self.actor.getAnimControl( "attack" )
                 if attackControl is None or not attackControl.isPlaying():
