@@ -55,6 +55,12 @@ class WalkingEnemy( Enemy ):
 
         base.cTrav.addCollider( self.attackSegmentNodePath, self.segmentQueue )
 
+        self.actor.play( "spawn" )
+
+        spawnControl = self.actor.getAnimControl( "spawn" )
+        if spawnControl is not None and spawnControl.isPlaying():
+            return
+
     def runLogic( self, player, dt ):
 
         vectorToPlayer = player.actor.getPos() - self.actor.getPos()

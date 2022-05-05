@@ -29,6 +29,14 @@ class GameObject():
 
         self.collider.setPythonTag( "owner", self )
 
+        self.deathSound = None
+
+        previousHealth = self.health
+
+        if previousHealth > 0 and self.health <= 0 and self.deathSound is not NOne:
+            self.deathSound.play()
+
+        self.laserSoundNoHI = loader.loadSfx( "audio/laser")
 
     def update( self, dt ):
 
