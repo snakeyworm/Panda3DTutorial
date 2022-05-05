@@ -141,7 +141,7 @@ class Game( ShowBase ):
 
             if collider.hasPythonTag( "owner" ):
                 obj = collider.getPythonTag( "owner" )
-                if isintance( obj, Player ):
+                if isinstance( obj, Player ):
                     if not trap.ignorePlayer:
                         obj.alterHealth( -1 )
                         trap.ignorePlayer = True

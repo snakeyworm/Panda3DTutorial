@@ -1,5 +1,6 @@
 
 from gameobs.Enemy import *
+from panda3d.core import BitMask32
 import math
 
 class TrapEnemy( Enemy ):
@@ -22,6 +23,20 @@ class TrapEnemy( Enemy ):
         self.moveDirection = -1.0
 
         self.ignorePlayer = False
+
+        mask = BitMask32()
+
+        mask.setBit( 2 )
+        mask.setBit( 1 )
+
+        self.collider.node().setIntoCollideMask( mask )
+
+        mask = BitMask32()
+
+        mask.setBit( 2 )
+        mask.setBit( 1 )
+
+        self.collider.node().setFromCollideMask( mask )
 
     def runLogic( self, player, dt ):
 
