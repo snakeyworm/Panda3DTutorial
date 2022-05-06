@@ -155,14 +155,7 @@ class Game( ShowBase ):
         music.setVolume( 0.075 )
         music.play()
 
-        self.enemySpawnSound = loader.loadSfx( "auido/enemy_spawn.ogg" )
-
-        self.laserSoundNoHit = loader.loadSfx( "audio/laserNoHit.ogg" )
-        self.laserSoundNoHit.setLoop( True )
-        self.laserSoundHit = loader.loadSfx( "Sounds/laserHit.ogg" )
-        self.laserSoundHit.setLoop( True )
-
-        self.hurtSound = loader.loadSfx( "Sound/" )
+        self.enemySpawnSound = loader.loadSfx( "sounds/enemy_spawn.ogg" )
 
     def startGame( self ):
 

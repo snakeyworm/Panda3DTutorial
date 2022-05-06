@@ -31,13 +31,6 @@ class GameObject():
 
         self.deathSound = None
 
-        previousHealth = self.health
-
-        if previousHealth > 0 and self.health <= 0 and self.deathSound is not NOne:
-            self.deathSound.play()
-
-        self.laserSoundNoHI = loader.loadSfx( "audio/laser")
-
     def update( self, dt ):
 
         speed = self.velocity.length()
@@ -66,10 +59,15 @@ class GameObject():
 
     def alterHealth( self, dHealth ):
         
+        previousHealth = self.health
+
         self.health += dHealth
 
         if self.health > self.maxHealth:
             self.health = self.maxHealth
+
+        if previousHealth > 0 and self.health <= 0 and self.deathSound is not None:
+            self.deathSound.play()
 
     def cleanup( self ):
 

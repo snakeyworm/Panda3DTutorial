@@ -61,6 +61,9 @@ class WalkingEnemy( Enemy ):
         if spawnControl is not None and spawnControl.isPlaying():
             return
 
+        self.deathSound = loader.loadSfx( "sounds/enemyDie.ogg" )
+        self.attackSound = looader.loadSfx( "sounds/enemyAttack.ogg" )
+
     def runLogic( self, player, dt ):
 
         vectorToPlayer = player.actor.getPos() - self.actor.getPos()
@@ -122,6 +125,7 @@ class WalkingEnemy( Enemy ):
                     self.attackDelayTimer = self.attackDelay
 
                     self.actor.play( "attack" )
+                    self.attackSound.play()
 
 
         self.actor.setH( heading )

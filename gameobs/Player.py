@@ -1,4 +1,5 @@
 
+from re import S
 from xml.sax.handler import DTDHandler
 from gameobs.GameObject import *
 from gameobs.TrapEnemy import *
@@ -7,6 +8,7 @@ from panda3d.core import BitMask32
 from panda3d.core import Plane, Point3
 from panda3d.core import Vec2, Vec3, Vec4
 from panda3d.core import PointLight
+from panda3d.core import AudioSound
 from direct.gui.OnscreenText import OnscreenText
 from direct.gui.OnscreenImage import OnscreenImage
 from panda3d.core import TextNode
@@ -72,6 +74,15 @@ class Player( GameObject ):
         self.damageTakenModelTimer = 0
         self.damageTakenModelDuration = 0.15
 
+        # Sounds
+
+        self.laserSoundNoHit = loader.loadSfx( "sounds/laserNoHit.ogg" )
+        self.laserSoundNoHit.setLoop( True )
+        self.laserSoundHit = loader.loadSfx( "sounds/laserHit.ogg" )
+        self.laserSoundHit.setLoop( True )
+
+        self.hurtSound = loader.loadSfx( "sounds/pandaHurt.ogg" )
+
         # Colliders
 
         self.ray = CollisionRay( 0, 0, 0, 0, 1, 0 )
@@ -134,6 +145,7 @@ class Player( GameObject ):
     def alterHealth( self, dHealth ):
 
         GameObject.alterHealth( self, dHealth )
+        self.hurtSound.play()
 
         self.damageTakenModel.show()
         self.damageTakenModel.setH( random.uniform( 0.0, 360.0 ) )
@@ -198,6 +210,11 @@ class Player( GameObject ):
 
                 if scoredHit:
 
+                    if self.laserSoundNoHit.status() == AudioSound.PLAYING:
+                        self.laserSoundNoHit.stop()
+                    if self.laserSoundHit.status() != AudioSound.PLAYING:
+                        self.laserSoundHit.play()
+                    
                     self.beamHitModel.show()
                     self.beamHitModel.setPos( hitPos )
                     self.beamHitLightNodePath.setPos( hitPos + Vec3( 0, 0, 0.5 ) )
@@ -206,14 +223,24 @@ class Player( GameObject ):
                         render.setLight( self.beamHitLightNodePath )
                 
                 else:
+
+                    if self.laserSoundHit.status() == AudioSound.PLAYING:
+                        self.laserSoundHit.stop()
+                    if self.laserSoundNoHit.status() != AudioSound.PLAYING:
+                        self.laserSoundNoHit.play()
             
                     if render.hasLight( self.beamHitLightNodePath ):
 
                         render.clearLight(self.beamHitLightNodePath )
 
-                    self.beamHitModel.hide()    
+                    self.beamHitModel.hide() 
 
         else:
+
+            if self.laserSoundHit.status() == AudioSound.PLAYING:
+                self.laserSoundHit.stop()
+            if self.laserSoundNoHit.status() == AudioSound.PLAYING:
+                self.laserSoundNoHit.stop()
 
             if render.hasLight( self.beamHitLightNodePath ):
                 render.clearLight( self.beamHitLightNodePath )
@@ -287,6 +314,7 @@ class Player( GameObject ):
             if self.damageTakenModelTimer <= 0:
                 self.damageTakenModel.hide()
 
+    # Cleanup player objects
     def cleanup( self ):
 
         base.cTrav.removeCollider( self.rayNodePath )
@@ -294,6 +322,9 @@ class Player( GameObject ):
 
         render.clearLight( self.beamHitLightNodePath )
         self.beamHitLightNodePath.removeNode()
+
+        self.laserSoundHit.stop()
+        self.laserSoundNoHit.stop()
 
         GameObject.cleanup( self )
 

@@ -38,6 +38,12 @@ class TrapEnemy( Enemy ):
 
         self.collider.node().setFromCollideMask( mask )
 
+        self.impactSound = loader.loadSfx( "Sounds/trapHitsSomething.ogg" )
+        self.stopSound = loader.loadSfx( "Sounds/trapStop.ogg" )
+        self.movementSound = loader.loadSfx( "Sounds/trapSlide.ogg" )
+
+        self.movementSound.setLoop( True )
+
     def runLogic( self, player, dt ):
 
         if self.moveDirection != 0:
@@ -62,6 +68,12 @@ class TrapEnemy( Enemy ):
 
             if abs( detector ) < 0.5:
                 self.moveDirection = math.copysign( 1, movement )
+                self.movementSound.play()
 
     def alterHealth( self, dHealth ):
         pass
+
+    def cleanup( self ):
+        self.movementSound.stop()
+
+        Enemy.cleanup( self )
