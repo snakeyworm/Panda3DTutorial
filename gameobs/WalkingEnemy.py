@@ -29,6 +29,9 @@ class WalkingEnemy( Enemy ):
         self.attackDelayTimer = 0
         self.attackWaitTimer = 0
 
+        self.deathSound = loader.loadSfx( "sounds/enemyDie.ogg" )
+        self.attackSound = loader.loadSfx( "sounds/enemyAttack.ogg" )
+
         self.yVector = Vec2( 0, 1 )
 
         mask = BitMask32()
@@ -61,9 +64,6 @@ class WalkingEnemy( Enemy ):
         if spawnControl is not None and spawnControl.isPlaying():
             return
 
-        self.deathSound = loader.loadSfx( "sounds/enemyDie.ogg" )
-        self.attackSound = looader.loadSfx( "sounds/enemyAttack.ogg" )
-
     def runLogic( self, player, dt ):
 
         vectorToPlayer = player.actor.getPos() - self.actor.getPos()
@@ -74,8 +74,6 @@ class WalkingEnemy( Enemy ):
         vectorToPlayer2D.normalize()
 
         heading = self.yVector.signedAngleDeg( vectorToPlayer2D )
-
-
 
         self.attackSegment.setPointA( self.actor.getPos() )
         self.attackSegment.setPointB( self.actor.getPos() + self.actor.getQuat().getForward() * self.attackDistance )

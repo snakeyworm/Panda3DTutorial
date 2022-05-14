@@ -1,3 +1,4 @@
+from tkinter import FLAT
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import WindowProperties
 from panda3d.core import AmbientLight, DirectionalLight
@@ -7,6 +8,7 @@ from panda3d.core import CollisionTube
 from panda3d.core import CollisionHandlerPusher
 from panda3d.core import CollisionTraverser
 from panda3d.core import AudioSound
+from direct.gui.DirectGui import *
 from gameobs.Player import *
 from gameobs.WalkingEnemy import *
 from gameobs.TrapEnemy import *
@@ -27,6 +29,95 @@ class Game( ShowBase ):
         self.render.setShaderAuto()
 
         self.exitFunc = self.cleanup
+
+        # Restart Menu
+
+        self.gameOverScreen = DirectDialog(
+            frameSize=(-0.7, 0.7, -0.7, 0.7 ),
+            fadeScreen=0.4,
+            relief=DGG.FLAT,
+            frameTexture="UI/stoneFrame.png"
+        )
+        self.gameOverScreen.hide()
+
+        self.font = loader.loadFont( "fonts/hotpizza.ttf" )
+
+        label = DirectLabel(
+            text="Game Over!",
+            parent=self.gameOverScreen,
+            scale=0.1,
+            pos=( 0, 0, 0.2),
+            text_font=self.font,
+            relief = None
+        )
+
+        self.finalScoreLabel = DirectLabel(
+            text="",
+            parent = self.gameOverScreen,
+            scale = 0.07,
+            pos=( 0, 0, 0 ),
+            text_font=self.font,
+            relief = None
+        )
+  
+        buttonImages = (
+            loader.loadTexture( "UI/UIButton.png" ),
+            loader.loadTexture( "UI/UIButtonPressed.png" ),
+            loader.loadTexture( "UI/UIButtonHighlighted.png" ),
+            loader.loadTexture( "UI/UIButtonDisabled.png" )
+        )
+
+        btn = DirectButton(
+            text = "Restart",
+            command = self.startGame,
+            pos = ( -0.3, 0, -0.2 ),
+            parent=self.gameOverScreen,
+            scale = 0.07,
+            text_font = self.font,
+            clickSound = loader.loadSfx( "sounds/UIClick.ogg" ),
+            frameTexture = buttonImages,
+            frameSize = ( -4, 4, -1, 1 ),
+            text_scale = 0.75,
+            relief = DGG.FLAT,
+            text_pos = ( 0, -0.2 )
+        )
+        btn.setTransparency( True )
+
+        btn = DirectButton(
+            text = "Quit",
+            command = self.quit,
+            pos = ( 0.3, 0, -0.2 ),
+            parent=self.gameOverScreen,
+            scale = 0.07,
+            text_font = self.font,
+            clickSound = loader.loadSfx( "sounds/UIClick.ogg" ),
+            frameTexture = buttonImages,
+            frameSize = ( -4, 4, -1, 1 ),
+            text_scale = 0.75,
+            relief = DGG.FLAT,
+            text_pos = ( 0, -0.2 )
+        )
+        btn.setTransparency( True )
+
+        # Main Menu
+
+        self.titleMenuBackdrop = DirectFrame( 
+            frameColor = ( 0, 0, 0, 1 ),
+            frameSize = ( -1, 1, -1, 1 ),
+            parent = render2d
+        )
+
+        self.titleMenu = DirectFrame( frameColor = ( 1, 1, 1, 0 ) )
+
+        title = DirectLabel(
+            text = "Panda Game",
+            scale = 0.1,
+            pos = ( 0, 0, 0.9 ),
+            parent = self.titleMenu,
+            relief = None,
+            text_font = self.font,
+            text_fg = ( 1, 1, 1, 1, ),
+        )
 
         # Collision Handlers and Traversers
 
@@ -124,7 +215,6 @@ class Game( ShowBase ):
         self.accept( "trapEnenmy-into-player", self.trapHitsSomething )
         self.accept( "trapEnemy-into-walkingEnemy", self.trapHitsSomething )
 
-
         wallSolid = CollisionTube( -8.0, 0, 0, 8.0, 0, 0, 0.2 )
         wallNode = CollisionNode( "wall" )
         wallNode.addSolid( wallSolid )
@@ -155,7 +245,7 @@ class Game( ShowBase ):
         music.setVolume( 0.075 )
         music.play()
 
-        self.enemySpawnSound = loader.loadSfx( "sounds/enemy_spawn.ogg" )
+        self.enemySpawnSound = loader.loadSfx( "sounds/enemySpawn.ogg" )
 
     def startGame( self ):
 
@@ -165,6 +255,10 @@ class Game( ShowBase ):
         self.maxEnemies = 2
         self.spawnInterval = self.initialSpawnInterval 
         self.difficultyTimer = self.difficultyInterval
+
+        self.gameOverScreen.hide()
+        self.titleMenu.hide()
+        self.titleMenuBackdrop.hide()
 
         sideTrapSlots = [
             [],
@@ -219,15 +313,22 @@ class Game( ShowBase ):
         collider = entry.getFromNodePath()
 
         if collider.hasPythonTag( "owner" ):
+            
             trap = collider.getPythonTag( "owner" )
             trap.moveDirection = 0
             trap.ignorePlayer = False
+
+            trap.movementSound.stop()
+            trap.stopSound.play()
     
     def trapHitsSomething( self, entry ):
+
         collider = entry.getFromNodePath()
 
         if collider.hasPythonTag( "owner" ):
+            
             trap = collider.getPythonTag( "owner" )
+            trap.impactSound.play()
 
             if trap.moveDirection == 0:
                 return
@@ -294,9 +395,14 @@ class Game( ShowBase ):
                         self.maxEnemies += 1
                     if self.spawnInterval > self.minimumSpawnInterval:
                         self.spawnInterval -= 0.1
-                    
-                
+            else:
 
+                if self.gameOverScreen.isHidden():
+
+                    self.gameOverScreen.show()
+                    self.finalScoreLabel[ "text" ] = "Final score: " + str( self.player.score )
+                    self.finalScoreLabel.setText()
+                    
         return task.cont
 
     def cleanup( self ):

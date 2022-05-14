@@ -38,9 +38,9 @@ class TrapEnemy( Enemy ):
 
         self.collider.node().setFromCollideMask( mask )
 
-        self.impactSound = loader.loadSfx( "Sounds/trapHitsSomething.ogg" )
-        self.stopSound = loader.loadSfx( "Sounds/trapStop.ogg" )
-        self.movementSound = loader.loadSfx( "Sounds/trapSlide.ogg" )
+        self.impactSound = loader.loadSfx( "sounds/trapHitsSomething.ogg" )
+        self.stopSound = loader.loadSfx( "sounds/trapStop.ogg" )
+        self.movementSound = loader.loadSfx( "sounds/trapSlide.ogg" )
 
         self.movementSound.setLoop( True )
 
